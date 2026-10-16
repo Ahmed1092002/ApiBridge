@@ -1,0 +1,24 @@
+{
+  "name": "apibridge-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-quality TypeScript monorepo for type-safe REST API contracts",
+  "scripts": {
+    "dev": "concurrently -n \"api,dashboard\" -c \"blue,green\" \"pnpm --filter @apibridge/demo-api dev\" \"pnpm --filter @apibridge/demo-dashboard dev\"",
+    "build": "pnpm -r --filter=./packages/* run build && pnpm -r --filter=./apps/* run build",
+    "test": "vitest run",
+    "lint": "eslint \"{packages,apps}/**/*.{ts,tsx}\"",
+    "format": "prettier --check \"**/*.{ts,tsx,json,md,yml,yaml}\"",
+    "format:fix": "prettier --write \"**/*.{ts,tsx,json,md,yml,yaml}\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^8.57.1",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
