@@ -1,356 +1,237 @@
-# ApiBridge
+# 🌉 ApiBridge
 
 [![CI](https://github.com/Ahmed1092002/ApiBridge/actions/workflows/ci.yml/badge.svg)](https://github.com/Ahmed1092002/ApiBridge/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Production-quality, type-safe REST API contract toolkit for full-stack TypeScript applications.**
+> **A type-safe REST contract toolkit for full-stack TypeScript applications.**
 
-ApiBridge eliminates type drift and duplicated endpoint definitions between frontend and backend. By defining API routes, request parameters, queries, bodies, and responses once with [Zod](https://zod.dev), ApiBridge guarantees end-to-end type safety, runtime request validation, automated Swagger/OpenAPI documentation generation, and fully typed React hooks.
-
----
-
-## The Problem ApiBridge Solves
-
-In modern full-stack web development, frontend and backend teams face persistent challenges:
-
-1. **Schema and Type Drift**: Backend changes an endpoint parameter or response field, but frontend TypeScript types are updated manually, leading to silent runtime crashes in production.
-2. **Duplicated Boilerplate**: Developers write route declarations in Express, runtime validation schemas in libraries like Joi or Celebrate, TypeScript interfaces for models, OpenAPI/Swagger decorators, and frontend API client wrappers.
-3. **No Guaranteed Runtime Adherence**: Frontend contracts often assume success structures while backend implementations return undocumented errors or inconsistent JSON payloads.
-
-**ApiBridge solves this by providing a single source of truth:**
-Define the contract once. Express enforces validation and generates OpenAPI specs automatically; React hooks consume the contract with zero manual typing.
+ApiBridge lets you define an API endpoint once with Zod, then reuse that contract on the server and the client. It removes duplicated request/response types, validates requests at runtime, generates OpenAPI documentation, and provides typed React Query hooks.
 
 ---
 
-## Architecture & Flow
+> [!IMPORTANT]
+> **What ApiBridge does—and does not—do:**
+>
+> - **It is not an authentication provider.** Plug your own session, JWT, OAuth, or tenancy logic into the `authorize` callback.
+> - **Client-side typing is not security.** The React package improves correctness and UX; authorization must always be enforced by the backend.
+> - **The demo uses in-memory data.** It is for experimenting with the contract flow, not a production persistence layer.
+
+---
+
+## 🏗️ Architecture
 
 ```mermaid
-flowchart TD
-    subgraph SingleSourceOfTruth["1. Shared Contract Layer"]
-        C["@ahmed109/apibridge-contracts<br/>(Zod Schemas & Route Definitions)"]
-    end
+graph TD
+    Contracts["@ahmed109/apibridge-contracts<br/>Zod schemas + endpoint contracts"]
+    Express["@ahmed109/apibridge-express<br/>Validation + authorization hook + OpenAPI"]
+    React["@ahmed109/apibridge-react<br/>Typed fetch client + TanStack Query hooks"]
+    Api["Express API"]
+    App["React application"]
+    Docs["Swagger / OpenAPI"]
 
-    subgraph BackendLayer["2. Backend Adapter"]
-        EXP["@ahmed109/apibridge-express<br/>(Express Route Handler)"]
-        VAL["Runtime Validation<br/>(Params, Query, Body, Response)"]
-        OAS["OpenAPI 3.0 / Swagger UI<br/>(/docs)"]
-    end
-
-    subgraph FrontendLayer["3. Frontend Client"]
-        RCT["@ahmed109/apibridge-react<br/>(Client Factory & Typed Hooks)"]
-        TQ["TanStack Query<br/>(useQuery, useMutation, Cache)"]
-    end
-
-    C -->|Imports Route Contracts| EXP
-    EXP --> VAL
-    EXP --> OAS
-    C -->|Imports Same Contracts| RCT
-    RCT --> TQ
+    Contracts --> Express
+    Contracts --> React
+    Express --> Api
+    React --> App
+    Express --> Docs
+    App -->|HTTP| Api
 ```
 
-### Shared Contract Flow:
+The same contract becomes the single source of truth for:
 
-1. **Contract Definition (`@ahmed109/apibridge-contracts`)**: Pure TypeScript contracts define paths, HTTP methods, headers, parameters, request body schemas, and response status codes using Zod.
-2. **Express Validation & OpenAPI (`@ahmed109/apibridge-express`)**: The backend mounts handlers with `apiBridge.route(contract, handler)`. Incoming requests are parsed and validated against the Zod schemas; malformed requests immediately receive standard `400 VALIDATION_ERROR` responses. Outgoing responses are validated in development to prevent schema leakage. Swagger UI is generated directly from the contracts.
-3. **React Typed Hooks (`@ahmed109/apibridge-react`)**: Frontend applications instantiate a typed client via `createApiClient({ baseUrl, contracts })`. Hooks like `useQuery` and `useMutation` automatically provide typed arguments, typed responses, query keys, and error structures.
+- request `params`, `query`, `headers`, and `body` validation;
+- typed response data and structured API errors;
+- endpoint metadata, permissions, and OpenAPI security requirements;
+- React Query `useQuery` and `useMutation` endpoints.
 
 ---
 
-## Monorepo Structure
+## 📦 Packages
 
-```text
-apibridge/
-├── apps/
-│   ├── demo-api/              # Express backend with seeded in-memory store & /docs Swagger
-│   └── demo-dashboard/        # Vite + React + Tailwind CSS Task Management console
-├── packages/
-│   ├── contracts/             # Framework-agnostic Zod route contracts & error schemas
-│   ├── express/               # Express adapter, runtime validation, & OpenAPI generator
-│   └── react/                 # Typed client factory & TanStack Query hooks
-├── docs/                      # Architectural assets and guides
-├── pnpm-workspace.yaml        # pnpm monorepo workspace definition
-├── tsconfig.base.json         # Strict TypeScript root configuration
-├── vitest.config.ts           # Vitest root test configuration
-└── README.md
-```
+| Package                                                                                        | Purpose                                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| [`@ahmed109/apibridge-contracts`](https://www.npmjs.com/package/@ahmed109/apibridge-contracts) | Framework-independent Zod contracts, inferred request/response types, and reusable standard error schemas. |
+| [`@ahmed109/apibridge-express`](https://www.npmjs.com/package/@ahmed109/apibridge-express)     | Express route wrapper with runtime validation, authorization hook, and OpenAPI/Swagger generation.         |
+| [`@ahmed109/apibridge-react`](https://www.npmjs.com/package/@ahmed109/apibridge-react)         | Typed REST client and TanStack Query hooks generated from the same endpoint contracts.                     |
 
 ---
 
-## Installation
+## 🚀 Installation
+
+### Backend
 
 ```bash
-# In your pnpm workspace:
-pnpm add @ahmed109/apibridge-contracts
-pnpm add @ahmed109/apibridge-express # For backend
-pnpm add @ahmed109/apibridge-react @tanstack/react-query # For React frontend
+npm install @ahmed109/apibridge-contracts @ahmed109/apibridge-express express zod
+```
+
+### React frontend
+
+```bash
+npm install @ahmed109/apibridge-contracts @ahmed109/apibridge-react @tanstack/react-query zod
 ```
 
 ---
 
-## Quickstart & Usage Examples
+## 💡 End-to-end example
 
-### 1. Define Contract (`@ahmed109/apibridge-contracts`)
+### 1. Define a shared contract
 
-```typescript
+```ts
 import { z } from "zod";
 import { defineRoute, standardErrors } from "@ahmed109/apibridge-contracts";
 
-export const TaskSchema = z.object({
-  id: z.string(),
-  title: z.string().min(1),
-  status: z.enum(["todo", "in_progress", "done"]),
-  priority: z.enum(["low", "medium", "high"]),
-  createdAt: z.string().datetime(),
-});
-
-export const createTaskContract = defineRoute({
-  method: "post",
-  path: "/api/tasks",
-  summary: "Create a new task",
-  tags: ["Tasks"],
-  body: z.object({
-    title: z.string().min(1).max(100),
-    priority: z.enum(["low", "medium", "high"]).default("medium"),
-  }),
+export const getProject = defineRoute({
+  method: "get",
+  path: "/teams/:teamId/projects/:projectId",
+  summary: "Get a project",
+  params: z.object({ teamId: z.string(), projectId: z.string() }),
+  query: z.object({ include: z.array(z.enum(["tasks", "members"])).optional() }),
+  headers: z.object({ "x-tenant-id": z.string().min(1) }),
+  auth: "required",
+  permissions: ["projects.read"],
+  security: [{ bearerAuth: [] }],
   responses: {
-    201: TaskSchema,
+    200: z.object({ id: z.string(), name: z.string() }),
     400: standardErrors[400],
     401: standardErrors[401],
   },
 });
 ```
 
-### 2. Implement Route in Express (`@ahmed109/apibridge-express`)
+### 2. Mount it in Express
 
-```typescript
+```ts
 import express from "express";
 import {
-  apiBridge,
+  ApiBridge,
   errorHandler,
-  setupSwaggerDocs,
   generateOpenApiDocument,
+  setupSwaggerDocs,
 } from "@ahmed109/apibridge-express";
-import { createTaskContract } from "@ahmed109/apibridge-contracts";
+import { getProject } from "./contracts";
 
 const app = express();
 app.use(express.json());
 
-// Type-safe route wrapper with automatic Zod validation:
-app.post(
-  createTaskContract.path,
-  apiBridge.route(createTaskContract, async ({ body, req }) => {
-    // `body` is inferred as: { title: string; priority: "low" | "medium" | "high" }
-    const newTask = {
-      id: "task-1",
-      title: body.title,
-      priority: body.priority,
-      status: "todo" as const,
-      createdAt: new Date().toISOString(),
-    };
+const bridge = new ApiBridge({
+  authorize: async ({ req, auth, permissions }) => {
+    const user = await getUserFromSession(req);
+    if (auth === "required" && !user) throw new Error("UNAUTHORIZED");
+    await assertPermissions(user, permissions);
+  },
+});
 
-    return {
-      status: 201,
-      body: newTask,
-    };
-  }),
+app.get(
+  getProject.path,
+  bridge.route(getProject, async ({ params, query, headers }) => ({
+    status: 200,
+    body: await projects.get({ ...params, ...query, tenantId: headers["x-tenant-id"] }),
+  })),
 );
 
-// Mount OpenAPI 3.0 documentation at /docs
-const spec = generateOpenApiDocument([createTaskContract], {
-  info: { title: "Task API", version: "1.0.0" },
+const spec = generateOpenApiDocument([getProject], {
+  info: { title: "Projects API", version: "1.0.0" },
+  securitySchemes: { bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" } },
 });
+
 setupSwaggerDocs(app, "/docs", spec);
-
-// Centralized error middleware
 app.use(errorHandler());
-
-app.listen(4000);
 ```
 
-### 3. Consume in React (`@ahmed109/apibridge-react`)
+### 3. Consume it from React
 
 ```tsx
-import React from "react";
 import { createApiClient } from "@ahmed109/apibridge-react";
-import { taskContracts } from "@ahmed109/apibridge-contracts";
+import { getProject } from "./contracts";
 
 const api = createApiClient({
-  baseUrl: "http://localhost:4000",
-  contracts: { tasks: taskContracts },
-  getHeaders: () => ({
-    "x-demo-user-id": "user-1",
-  }),
+  baseUrl: "https://api.example.com",
+  contracts: { projects: { get: getProject } },
+  getHeaders: () => ({ Authorization: `Bearer ${token}`, "x-tenant-id": activeTenantId }),
 });
 
-export function TaskList() {
-  // Fully typed query hook:
-  const { data, isLoading, error } = api.tasks.list.useQuery({
-    status: "todo",
-    page: 1,
-    limit: 10,
-  });
-
-  // Fully typed mutation hook:
-  const createTask = api.tasks.create.useMutation();
-
-  const handleCreate = () => {
-    createTask.mutate({
-      title: "Build ApiBridge",
-      priority: "high",
-    });
-  };
-
-  if (isLoading) return <div>Loading tasks...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  return (
-    <div>
-      <button onClick={handleCreate}>Add Task</button>
-      <ul>
-        {data?.items.map((task) => (
-          <li key={task.id}>
-            {task.title} ({task.priority})
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-```
-
----
-
-## Custom Route Metadata, Parameters, and Query Serialization
-
-ApiBridge is not limited to `:id` paths or a fixed authentication model. Contracts can declare arbitrary path parameters, required headers, application permissions, and OpenAPI security requirements:
-
-```ts
-const getProject = defineRoute({
-  method: "get",
-  path: "/teams/:teamId/projects/:projectId",
-  params: z.object({ teamId: z.string(), projectId: z.string() }),
-  headers: z.object({ "x-tenant-id": z.string() }),
-  auth: "required",
-  permissions: ["projects.read"],
-  security: [{ bearerAuth: [] }],
-  responses: { 200: ProjectSchema },
-});
-```
-
-The React client serializes every declared path parameter and serializes arrays as repeated query keys by default:
-
-```ts
-api.projects.get.useQuery({
+const project = api.projects.get.useQuery({
   params: { teamId: "team-1", projectId: "project-7" },
   query: { include: ["tasks", "members"] },
 });
-// /teams/team-1/projects/project-7?include=tasks&include=members
+// GET /teams/team-1/projects/project-7?include=tasks&include=members
 ```
-
-On Express, `headers` are runtime-validated. Pass an `authorize` callback to `new ApiBridge()` or to an individual `route()` call to connect your own session, RBAC, or tenancy system; ApiBridge deliberately does not impose one authentication provider.
-
-```ts
-const apiBridge = new ApiBridge({
-  authorize: async ({ req, permissions }) => {
-    await myAuthorizationService.assert(req.user, permissions);
-  },
-});
-```
-
-Pass matching `securitySchemes` to `generateOpenApiDocument()` when you use `security` metadata, so Swagger receives the full scheme definition.
-
-## API Endpoints Table
-
-| Method   | Path             | Summary                                  | Auth Required          | Request Payload                                                   | Response (Success)                     |
-| -------- | ---------------- | ---------------------------------------- | ---------------------- | ----------------------------------------------------------------- | -------------------------------------- |
-| `GET`    | `/api/me`        | Current user profile                     | Yes (`x-demo-user-id`) | None                                                              | `200 User`                             |
-| `GET`    | `/api/tasks`     | List tasks (filtered, sorted, paginated) | No                     | Query: `status, priority, search, page, limit, sortBy, sortOrder` | `200 TaskListResponse`                 |
-| `GET`    | `/api/tasks/:id` | Get task by ID                           | No                     | Params: `id`                                                      | `200 Task`                             |
-| `POST`   | `/api/tasks`     | Create task                              | Yes (`x-demo-user-id`) | Body: `CreateTaskInput`                                           | `201 Task`                             |
-| `PATCH`  | `/api/tasks/:id` | Partial update task                      | Yes (`x-demo-user-id`) | Params: `id`, Body: `UpdateTaskInput`                             | `200 Task`                             |
-| `DELETE` | `/api/tasks/:id` | Delete task                              | Yes (`x-demo-user-id`) | Params: `id`                                                      | `200 { success: boolean, id: string }` |
-
-### Standard Error Envelopes
-
-ApiBridge enforces structured error contracts across all endpoints:
-
-- `400 VALIDATION_ERROR`: Includes array of issue paths (`path: ["body", "title"]`), validation code, and error message.
-- `401 UNAUTHORIZED`: Returned when `x-demo-user-id` is absent or unauthenticated on protected routes.
-- `404 NOT_FOUND`: Returned when the target resource (e.g. task ID) does not exist.
-- `500 INTERNAL_SERVER_ERROR`: Returned on uncaught exceptions or schema validation failures during development.
 
 ---
 
-## Local Development Setup
+## ✨ Key capabilities
 
-### Prerequisites
+### Contracts and validation
 
-- Node.js >= 18 (recommended Node 22+)
-- pnpm >= 9
+- Zod-backed validation for params, query strings, headers, and JSON bodies.
+- Inferred TypeScript types without separately writing interfaces.
+- Optional response validation during development to catch backend contract drift.
+- Reusable structured `400`, `401`, `404`, and `500` error schemas.
 
-### Installation & Run
+### Authorization and metadata
+
+- Endpoint-level `auth: "public" | "optional" | "required"` metadata.
+- Application-defined permissions such as `projects.read` or `billing.export`.
+- A framework-neutral `authorize` callback—no lock-in to a specific identity provider.
+- Optional OpenAPI security declarations and custom security schemes.
+
+### React client
+
+- Typed `fetch`, `useQuery`, `useMutation`, query keys, error states, and response data.
+- Any named path parameter works: `/teams/:teamId/projects/:projectId` is supported, not only `:id`.
+- Arrays serialize as repeated query keys by default: `tag=react&tag=typescript`.
+- Custom `serializeQuery` support for APIs with a different query convention.
+
+---
+
+## 🧪 Demo applications
+
+The repository contains a working task-management example:
+
+| App                   | URL                          | What it demonstrates                                                                    |
+| --------------------- | ---------------------------- | --------------------------------------------------------------------------------------- |
+| `apps/demo-api`       | `http://localhost:4000`      | Express endpoints, runtime validation, protected mutations, and generated Swagger docs. |
+| `apps/demo-dashboard` | `http://localhost:5173`      | React dashboard consuming the same contracts through typed hooks.                       |
+| Swagger UI            | `http://localhost:4000/docs` | OpenAPI document generated from contract definitions.                                   |
+
+### Run locally
 
 ```bash
-# 1. Install all dependencies across workspaces
 pnpm install
-
-# 2. Build contracts and helper packages
 pnpm build
-
-# 3. Start both demo API and demo dashboard concurrently
 pnpm dev
 ```
 
-Once running:
-
-- **Demo Dashboard**: [http://localhost:5173](http://localhost:5173)
-- **Demo API**: [http://localhost:4000](http://localhost:4000)
-- **Interactive Swagger / OpenAPI UI**: [http://localhost:4000/docs](http://localhost:4000/docs)
-
 ---
 
-## Testing & Quality Commands
+## 🧪 Quality checks
 
 ```bash
-# Run Vitest test suites across contracts, express, and react packages
-pnpm test
-
-# Run TypeScript build verification
-pnpm build
-
-# Run ESLint across monorepo
-pnpm lint
-
-# Check code formatting with Prettier
-pnpm format
+pnpm lint      # ESLint across packages and demo apps
+pnpm test      # Vitest: contracts, Express adapter, React client
+pnpm build     # TypeScript package and demo builds
+pnpm format    # Prettier check
 ```
 
----
-
-## Application Screenshots
-
-|                                     Overview Dashboard                                      |                                   Tasks Management                                    |
-| :-----------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------: |
-| _(Screenshot: Overview metrics, status counts, priority distribution, and recent activity)_ | _(Screenshot: Filterable task table with status badges, pagination, and CRUD modals)_ |
-
-|                                   Interactive API Explorer                                    |                         Swagger / OpenAPI UI (/docs)                         |
-| :-------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------: |
-| _(Screenshot: Endpoint selector, schema viewer, live payload runner, and response inspector)_ | _(Screenshot: Complete auto-generated OpenAPI 3.0 Swagger UI documentation)_ |
+The suite covers contract inference, request validation, headers, authorization hooks, OpenAPI metadata, nested route parameters, and repeated query serialization.
 
 ---
 
-## Roadmap
+## 🗺️ Roadmap
 
-- [ ] **PostgreSQL Persistence**: Replace in-memory repository with Prisma / Drizzle ORM adapter.
-- [ ] **JWT Authentication**: Add bearer token header extraction, refresh token rotation, and role-based permissions.
-- [ ] **CLI Code Generator**: Command-line scaffolding utility (`apibridge init`, `apibridge add-route`).
-- [ ] **API Versioning**: URL and header-based route contract versioning (`/v1`, `/v2`).
-- [ ] **npm Publishing Pipeline**: Automated semantic versioning and publishing to npm.
-- [ ] **Request Retry & Resilience**: Exponential backoff retry policies integrated into `@ahmed109/apibridge-react`.
-- [ ] **React Native Support**: Adapter for cross-platform iOS & Android mobile clients.
+- [ ] CLI scaffolding (`apibridge init`, `apibridge add-route`).
+- [ ] Generated typed clients for non-React consumers.
+- [ ] API versioning helpers.
+- [ ] Retry and resilience policies for the React client.
+- [ ] Changesets-based npm release workflow.
+- [ ] Optional adapters for Fastify and React Native.
 
 ---
 
-## License
+## 📄 License
 
-MIT © ApiBridge Contributors
+MIT © 2026 ApiBridge Contributors. See [LICENSE](LICENSE).
+
+## 🔗 Repository
+
+[github.com/Ahmed1092002/ApiBridge](https://github.com/Ahmed1092002/ApiBridge)
