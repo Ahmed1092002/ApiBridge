@@ -1,6 +1,6 @@
 {
   "name": "@ahmed109/apibridge-contracts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Shared framework-agnostic API contracts with Zod",
   "license": "MIT",
   "repository": {

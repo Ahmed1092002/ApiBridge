@@ -2,7 +2,11 @@ import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { userContracts, taskContracts } from "@ahmed109/apibridge-contracts";
-import { generateOpenApiDocument, setupSwaggerDocs, errorHandler } from "@ahmed109/apibridge-express";
+import {
+  generateOpenApiDocument,
+  setupSwaggerDocs,
+  errorHandler,
+} from "@ahmed109/apibridge-express";
 import { authRouter } from "./routes/auth";
 import { taskRouter } from "./routes/tasks";
 import { userRepo } from "./data/repository";

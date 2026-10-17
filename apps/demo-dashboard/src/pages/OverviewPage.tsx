@@ -309,8 +309,8 @@ export function OverviewPage(): React.JSX.Element {
             <h3 className="font-bold text-lg text-white">No handwritten API types</h3>
             <p className="text-xs text-slate-300 mt-2 leading-relaxed">
               If an endpoint parameter changes in{" "}
-              <code className="font-mono text-brand-300">@ahmed109/apibridge-contracts</code>, the compiler
-              alerts both Express controllers and React hooks immediately.
+              <code className="font-mono text-brand-300">@ahmed109/apibridge-contracts</code>, the
+              compiler alerts both Express controllers and React hooks immediately.
             </p>
           </div>
 

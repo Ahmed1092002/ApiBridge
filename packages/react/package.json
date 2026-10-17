@@ -1,6 +1,6 @@
 {
   "name": "@ahmed109/apibridge-react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "TanStack Query typed client and React hooks for ApiBridge contracts",
   "license": "MIT",
   "repository": {

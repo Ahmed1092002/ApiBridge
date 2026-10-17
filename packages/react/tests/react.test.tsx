@@ -55,7 +55,11 @@ describe("@ahmed109/apibridge-react", () => {
       fetch: mockFetch,
     });
 
-    await api.projects.get.fetch({ teamId: "team-1", projectId: "p-1", include: ["tasks", "members"] });
+    await api.projects.get.fetch({
+      teamId: "team-1",
+      projectId: "p-1",
+      include: ["tasks", "members"],
+    });
     expect(mockFetch).toHaveBeenCalledWith(
       "https://api.example.com/api/teams/team-1/projects/p-1?include=tasks&include=members",
       expect.objectContaining({ method: "GET" }),

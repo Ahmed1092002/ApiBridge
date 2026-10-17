@@ -306,7 +306,9 @@ export function generateOpenApiDocument(
     info: options.info,
     servers: options.servers || [{ url: "/" }],
     paths,
-    ...(options.securitySchemes ? { components: { securitySchemes: options.securitySchemes } } : {}),
+    ...(options.securitySchemes
+      ? { components: { securitySchemes: options.securitySchemes } }
+      : {}),
   };
 }
 
