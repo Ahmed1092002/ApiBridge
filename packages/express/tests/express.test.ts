@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import express, { Express } from "express";
 import request from "supertest";
-import { taskContracts, userContracts } from "@ahmed109/apibridge-contracts";
+import { defineRoute, taskContracts, userContracts } from "@ahmed109/apibridge-contracts";
+import { z } from "zod";
 import {
+  ApiBridge,
   apiBridge,
   errorHandler,
   NotFoundError,
@@ -187,5 +189,47 @@ describe("@ahmed109/apibridge-express", () => {
     expect(spec.paths["/api/tasks"].post).toBeDefined();
     expect(spec.paths["/api/tasks/{id}"]).toBeDefined();
     expect(spec.paths["/api/me"]).toBeDefined();
+  });
+
+  it("validates declared headers and passes auth metadata to the authorization hook", async () => {
+    const contract = defineRoute({
+      method: "get",
+      path: "/api/tenants/:tenantId",
+      params: z.object({ tenantId: z.string() }),
+      headers: z.object({ "x-tenant-id": z.string().min(1) }),
+      auth: "required",
+      permissions: ["tenants.read"],
+      security: [{ apiKeyAuth: [] }],
+      responses: { 200: z.object({ tenantId: z.string() }) },
+    });
+    const authorize = vi.fn();
+    const bridge = new ApiBridge({ authorize });
+    const protectedApp = express();
+    protectedApp.get(
+      contract.path,
+      bridge.route(contract, async ({ params, headers }) => ({
+        status: 200,
+        body: { tenantId: `${params.tenantId}:${headers["x-tenant-id"]}` },
+      })),
+    );
+
+    await request(protectedApp).get("/api/tenants/t-1").expect(400);
+    await request(protectedApp)
+      .get("/api/tenants/t-1")
+      .set("x-tenant-id", "tenant-a")
+      .expect(200, { tenantId: "t-1:tenant-a" });
+
+    expect(authorize).toHaveBeenCalledWith(
+      expect.objectContaining({ auth: "required", permissions: ["tenants.read"] }),
+    );
+
+    const spec = generateOpenApiDocument([contract], {
+      info: { title: "Test", version: "1" },
+      securitySchemes: { apiKeyAuth: { type: "apiKey", in: "header", name: "x-api-key" } },
+    });
+    const operation = spec.paths["/api/tenants/{tenantId}"].get as Record<string, unknown>;
+    expect(operation["x-apibridge-auth"]).toBe("required");
+    expect(operation.security).toEqual([{ apiKeyAuth: [] }]);
+    expect(spec.components?.securitySchemes?.apiKeyAuth).toBeDefined();
   });
 });

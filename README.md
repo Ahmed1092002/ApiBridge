@@ -217,6 +217,45 @@ export function TaskList() {
 
 ---
 
+## Custom Route Metadata, Parameters, and Query Serialization
+
+ApiBridge is not limited to `:id` paths or a fixed authentication model. Contracts can declare arbitrary path parameters, required headers, application permissions, and OpenAPI security requirements:
+
+```ts
+const getProject = defineRoute({
+  method: "get",
+  path: "/teams/:teamId/projects/:projectId",
+  params: z.object({ teamId: z.string(), projectId: z.string() }),
+  headers: z.object({ "x-tenant-id": z.string() }),
+  auth: "required",
+  permissions: ["projects.read"],
+  security: [{ bearerAuth: [] }],
+  responses: { 200: ProjectSchema },
+});
+```
+
+The React client serializes every declared path parameter and serializes arrays as repeated query keys by default:
+
+```ts
+api.projects.get.useQuery({
+  params: { teamId: "team-1", projectId: "project-7" },
+  query: { include: ["tasks", "members"] },
+});
+// /teams/team-1/projects/project-7?include=tasks&include=members
+```
+
+On Express, `headers` are runtime-validated. Pass an `authorize` callback to `new ApiBridge()` or to an individual `route()` call to connect your own session, RBAC, or tenancy system; ApiBridge deliberately does not impose one authentication provider.
+
+```ts
+const apiBridge = new ApiBridge({
+  authorize: async ({ req, permissions }) => {
+    await myAuthorizationService.assert(req.user, permissions);
+  },
+});
+```
+
+Pass matching `securitySchemes` to `generateOpenApiDocument()` when you use `security` metadata, so Swagger receives the full scheme definition.
+
 ## API Endpoints Table
 
 | Method   | Path             | Summary                                  | Auth Required          | Request Payload                                                   | Response (Success)                     |

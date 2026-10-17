@@ -171,5 +171,11 @@ describe("@ahmed109/apibridge-contracts", () => {
       expect(userContracts.me.method).toBe("get");
       expect(userContracts.me.path).toBe("/api/me");
     });
+
+    it("keeps auth, permission, and OpenAPI security metadata on a contract", () => {
+      const contract = taskContracts.create;
+      expect(contract.auth).toBe("required");
+      expect(contract.permissions).toEqual(["tasks.create"]);
+    });
   });
 });

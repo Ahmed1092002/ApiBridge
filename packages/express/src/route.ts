@@ -5,17 +5,28 @@ import {
   InferRouteParams,
   InferRouteQuery,
   InferRouteBody,
+  InferRouteHeaders,
 } from "@ahmed109/apibridge-contracts";
 import { InternalServerError } from "./errors";
 
 export interface RouteOptions {
   validateResponse?: boolean;
+  /** Optional application authorization hook for routes with auth/permission metadata. */
+  authorize?: (context: RouteAuthorizationContext) => void | Promise<void>;
+}
+
+export interface RouteAuthorizationContext {
+  req: Request;
+  contract: AnyRouteContract;
+  auth: "public" | "optional" | "required";
+  permissions: readonly string[];
 }
 
 export interface ApiBridgeHandlerContext<TContract extends AnyRouteContract> {
   params: InferRouteParams<TContract>;
   query: InferRouteQuery<TContract>;
   body: InferRouteBody<TContract>;
+  headers: InferRouteHeaders<TContract>;
   req: Request;
   res: Response;
 }
@@ -36,6 +47,7 @@ export class ApiBridge {
   constructor(options: RouteOptions = {}) {
     this.defaultOptions = {
       validateResponse: options.validateResponse ?? process.env.NODE_ENV !== "production",
+      authorize: options.authorize,
     };
   }
 
@@ -48,6 +60,7 @@ export class ApiBridge {
     routeOptions?: RouteOptions,
   ): RequestHandler {
     const validateResponse = routeOptions?.validateResponse ?? this.defaultOptions.validateResponse;
+    const authorize = routeOptions?.authorize ?? this.defaultOptions.authorize;
 
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
       try {
@@ -111,11 +124,42 @@ export class ApiBridge {
           validatedBody = parsed.data;
         }
 
-        // 4. Execute handler
+        // 4. Validate declared request headers. Express normalizes header names to lowercase.
+        let validatedHeaders: unknown = req.headers;
+        if (contract.headers) {
+          const parsed = contract.headers.safeParse(req.headers);
+          if (!parsed.success) {
+            res.status(400).json({
+              statusCode: 400,
+              error: "VALIDATION_ERROR",
+              message: "Invalid request headers",
+              issues: parsed.error.errors.map((e: ZodIssue) => ({
+                path: ["headers", ...e.path],
+                message: e.message,
+                code: e.code,
+              })),
+            });
+            return;
+          }
+          validatedHeaders = parsed.data;
+        }
+
+        // 5. Give applications one reusable hook for contract-declared auth and permissions.
+        if (authorize && (contract.auth || contract.permissions?.length)) {
+          await authorize({
+            req,
+            contract,
+            auth: contract.auth ?? "public",
+            permissions: contract.permissions ?? [],
+          });
+        }
+
+        // 6. Execute handler
         const result = await handler({
           params: validatedParams as InferRouteParams<TContract>,
           query: validatedQuery as InferRouteQuery<TContract>,
           body: validatedBody as InferRouteBody<TContract>,
+          headers: validatedHeaders as InferRouteHeaders<TContract>,
           req,
           res,
         });
@@ -125,7 +169,7 @@ export class ApiBridge {
           return;
         }
 
-        // 5. If handler returned a response result, validate and send
+        // 7. If handler returned a response result, validate and send
         if (result && typeof result === "object" && "status" in result) {
           const { status, body } = result as RouteResponseResult;
 

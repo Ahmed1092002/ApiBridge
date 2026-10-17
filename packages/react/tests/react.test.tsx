@@ -4,6 +4,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { taskContracts } from "@ahmed109/apibridge-contracts";
+import { defineRoute } from "@ahmed109/apibridge-contracts";
+import { z } from "zod";
 import { createApiClient, ApiBridgeClientError } from "../src";
 
 describe("@ahmed109/apibridge-react", () => {
@@ -32,6 +34,32 @@ describe("@ahmed109/apibridge-react", () => {
 
     const key = api.tasks.list.getQueryKey({ status: "todo", page: 1 });
     expect(key).toEqual(["/api/tasks", "get", { status: "todo", page: 1 }]);
+  });
+
+  it("serializes arbitrary path parameter names, repeated query values, and custom serializers", async () => {
+    const getProject = defineRoute({
+      method: "get",
+      path: "/api/teams/:teamId/projects/:projectId",
+      params: z.object({ teamId: z.string(), projectId: z.string() }),
+      query: z.object({ include: z.array(z.string()).optional() }),
+      responses: { 200: z.object({ id: z.string() }) },
+    });
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ id: "p-1" }),
+    });
+    const api = createApiClient({
+      baseUrl: "https://api.example.com/",
+      contracts: { projects: { get: getProject } },
+      fetch: mockFetch,
+    });
+
+    await api.projects.get.fetch({ teamId: "team-1", projectId: "p-1", include: ["tasks", "members"] });
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://api.example.com/api/teams/team-1/projects/p-1?include=tasks&include=members",
+      expect.objectContaining({ method: "GET" }),
+    );
   });
 
   it("fetches data successfully via useQuery", async () => {

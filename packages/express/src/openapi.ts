@@ -26,6 +26,8 @@ export interface OpenApiServer {
 export interface OpenApiOptions {
   info: OpenApiInfo;
   servers?: OpenApiServer[];
+  /** Security schemes referenced by route `security` metadata. */
+  securitySchemes?: Record<string, unknown>;
 }
 
 export interface OpenApiParameter {
@@ -233,6 +235,21 @@ export function generateOpenApiDocument(
       }
     }
 
+    // Header parameters
+    if (route.headers && route.headers._def?.shape) {
+      const shape = route.headers._def.shape();
+      for (const [key, val] of Object.entries(shape)) {
+        const valDef = (val as z.ZodTypeAny)._def;
+        const isOptional = valDef.typeName === "ZodOptional" || valDef.typeName === "ZodDefault";
+        parameters.push({
+          name: key,
+          in: "header",
+          required: !isOptional,
+          schema: zodToOpenApiSchema(val as z.ZodTypeAny),
+        });
+      }
+    }
+
     // Operation object
     const operation: Record<string, unknown> = {
       summary: route.summary || `${method.toUpperCase()} ${openApiPath}`,
@@ -243,6 +260,16 @@ export function generateOpenApiDocument(
 
     if (parameters.length > 0) {
       operation.parameters = parameters;
+    }
+
+    if (route.auth) {
+      operation["x-apibridge-auth"] = route.auth;
+    }
+    if (route.security) {
+      operation.security = route.security;
+    }
+    if (route.permissions?.length) {
+      operation["x-apibridge-permissions"] = route.permissions;
     }
 
     // Request body
@@ -279,6 +306,7 @@ export function generateOpenApiDocument(
     info: options.info,
     servers: options.servers || [{ url: "/" }],
     paths,
+    ...(options.securitySchemes ? { components: { securitySchemes: options.securitySchemes } } : {}),
   };
 }
 

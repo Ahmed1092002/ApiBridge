@@ -21,6 +21,10 @@ interface ParsedRequestInput {
   body?: unknown;
 }
 
+function getPathParamNames(path: string): string[] {
+  return Array.from(path.matchAll(/:([A-Za-z0-9_]+)/g), (match) => match[1]);
+}
+
 /**
  * Normalizes various caller input styles into structured params, query, and body.
  */
@@ -44,20 +48,38 @@ function normalizeInput(contract: AnyRouteContract, input: unknown): ParsedReque
     };
   }
 
-  // Otherwise, intelligently map fields based on route contract
+  // Otherwise, infer path params from every `:paramName` placeholder in the route.
   const hasParams = Boolean(contract.params);
   const hasBody = Boolean(contract.body);
   const isGet = contract.method.toLowerCase() === "get";
 
-  if (isGet) {
-    // For GET: if route has params (like :id), separate id from rest (query)
-    if (hasParams && "id" in obj) {
-      const { id, ...rest } = obj;
+  if (hasParams) {
+    const paramNames = getPathParamNames(contract.path);
+    const params: Record<string, unknown> = {};
+    const rest: Record<string, unknown> = { ...obj };
+
+    for (const name of paramNames) {
+      if (name in rest) {
+        params[name] = rest[name];
+        delete rest[name];
+      }
+    }
+
+    if (Object.keys(params).length > 0) {
+      if (isGet) {
+        return {
+          params,
+          query: Object.keys(rest).length > 0 ? rest : undefined,
+        };
+      }
       return {
-        params: { id },
-        query: Object.keys(rest).length > 0 ? rest : undefined,
+        params,
+        body: hasBody && Object.keys(rest).length > 0 ? rest : undefined,
       };
     }
+  }
+
+  if (isGet) {
     return { query: obj };
   }
 
@@ -85,6 +107,7 @@ function buildUrl(
   contractPath: string,
   params?: Record<string, unknown>,
   query?: Record<string, unknown>,
+  serializeQuery?: ApiClientConfig["serializeQuery"],
 ): string {
   // Strip trailing slash from baseUrl
   const cleanBase = baseUrl.replace(/\/+$/, "");
@@ -99,12 +122,7 @@ function buildUrl(
   let url = `${cleanBase}${interpolatedPath}`;
 
   if (query) {
-    const searchParams = new URLSearchParams();
-    for (const [key, val] of Object.entries(query)) {
-      if (val !== undefined && val !== null && val !== "") {
-        searchParams.append(key, String(val));
-      }
-    }
+    const searchParams = serializeQuery ? serializeQuery(query) : defaultSerializeQuery(query);
     const queryString = searchParams.toString();
     if (queryString) {
       url += (url.includes("?") ? "&" : "?") + queryString;
@@ -112,6 +130,20 @@ function buildUrl(
   }
 
   return url;
+}
+
+function defaultSerializeQuery(query: Record<string, unknown>): URLSearchParams {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value === undefined || value === null || value === "") continue;
+
+    const values = Array.isArray(value) ? value : [value];
+    for (const item of values) {
+      if (item === undefined || item === null) continue;
+      searchParams.append(key, item instanceof Date ? item.toISOString() : String(item));
+    }
+  }
+  return searchParams;
 }
 
 /**
@@ -128,7 +160,7 @@ function createEndpoint<TContract extends AnyRouteContract>(
     init?: RequestInit,
   ): Promise<InferRouteResponse<TContract, 200 | 201>> => {
     const { params, query, body } = normalizeInput(contract, input);
-    const url = buildUrl(config.baseUrl, contract.path, params, query);
+    const url = buildUrl(config.baseUrl, contract.path, params, query, config.serializeQuery);
 
     const customHeaders = config.getHeaders ? await config.getHeaders() : {};
     const headers: Record<string, string> = {
@@ -232,11 +264,13 @@ export function createApiClient<TContracts extends Record<string, unknown>>(opti
   contracts: TContracts;
   getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
   fetch?: typeof fetch;
+  serializeQuery?: ApiClientConfig["serializeQuery"];
 }): TypedApiClient<TContracts> {
   const config: ApiClientConfig = {
     baseUrl: options.baseUrl,
     getHeaders: options.getHeaders,
     fetch: options.fetch,
+    serializeQuery: options.serializeQuery,
   };
 
   function buildTree(node: unknown): unknown {

@@ -115,6 +115,8 @@ export const taskContracts = {
     summary: "Create a new task",
     description: "Create a task with title, optional description, status, priority, and assignee.",
     tags: ["Tasks"],
+    auth: "required",
+    permissions: ["tasks.create"],
     body: CreateTaskInputSchema,
     responses: {
       201: TaskSchema,
@@ -130,6 +132,8 @@ export const taskContracts = {
     summary: "Update task",
     description: "Partially update an existing task.",
     tags: ["Tasks"],
+    auth: "required",
+    permissions: ["tasks.update"],
     params: TaskParamsSchema,
     body: UpdateTaskInputSchema,
     responses: {
@@ -147,6 +151,8 @@ export const taskContracts = {
     summary: "Delete task",
     description: "Permanently delete an existing task by ID.",
     tags: ["Tasks"],
+    auth: "required",
+    permissions: ["tasks.delete"],
     params: TaskParamsSchema,
     responses: {
       200: DeleteTaskResponseSchema,

@@ -18,6 +18,8 @@ export interface ApiClientConfig {
   baseUrl: string;
   getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
   fetch?: typeof fetch;
+  /** Converts query input to a URL query string. Defaults to repeated keys for arrays and ISO strings for Dates. */
+  serializeQuery?: (query: Record<string, unknown>) => string | URLSearchParams;
 }
 
 export class ApiBridgeClientError extends Error {
