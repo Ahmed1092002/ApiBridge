@@ -1,6 +1,6 @@
 import { Router, Request } from "express";
-import { taskContracts } from "@apibridge/contracts";
-import { apiBridge, NotFoundError, UnauthorizedError } from "@apibridge/express";
+import { taskContracts } from "@ahmed109/apibridge-contracts";
+import { apiBridge, NotFoundError, UnauthorizedError } from "@ahmed109/apibridge-express";
 import { taskRepo, userRepo } from "../data/repository";
 
 export const taskRouter: Router = Router();

@@ -1,4 +1,4 @@
-import { AnyRouteContract, InferRouteResponse } from "@apibridge/contracts";
+import { AnyRouteContract, InferRouteResponse } from "@ahmed109/apibridge-contracts";
 import {
   useQuery as useTanStackQuery,
   useMutation as useTanStackMutation,

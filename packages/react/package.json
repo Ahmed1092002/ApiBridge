@@ -1,7 +1,17 @@
 {
-  "name": "@apibridge/react",
+  "name": "@ahmed109/apibridge-react",
   "version": "1.0.0",
   "description": "TanStack Query typed client and React hooks for ApiBridge contracts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ahmed1092002/npm-packages.git",
+    "directory": "ApiBridge/packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/Ahmed1092002/npm-packages/issues"
+  },
+  "homepage": "https://github.com/Ahmed1092002/npm-packages/tree/main/ApiBridge#readme",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -15,10 +25,19 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --external react",
     "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepack": "pnpm run build"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@apibridge/contracts": "workspace:*",
+    "@ahmed109/apibridge-contracts": "workspace:^1.0.0",
     "@tanstack/react-query": "^5.62.7"
   },
   "peerDependencies": {

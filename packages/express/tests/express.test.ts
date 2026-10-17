@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import express, { Express } from "express";
 import request from "supertest";
-import { taskContracts, userContracts } from "@apibridge/contracts";
+import { taskContracts, userContracts } from "@ahmed109/apibridge-contracts";
 import {
   apiBridge,
   errorHandler,
@@ -10,7 +10,7 @@ import {
   generateOpenApiDocument,
 } from "../src";
 
-describe("@apibridge/express", () => {
+describe("@ahmed109/apibridge-express", () => {
   let app: Express;
 
   beforeEach(() => {

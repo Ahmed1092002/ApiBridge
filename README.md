@@ -24,17 +24,17 @@ Define the contract once. Express enforces validation and generates OpenAPI spec
 ```mermaid
 flowchart TD
     subgraph SingleSourceOfTruth["1. Shared Contract Layer"]
-        C["@apibridge/contracts<br/>(Zod Schemas & Route Definitions)"]
+        C["@ahmed109/apibridge-contracts<br/>(Zod Schemas & Route Definitions)"]
     end
 
     subgraph BackendLayer["2. Backend Adapter"]
-        EXP["@apibridge/express<br/>(Express Route Handler)"]
+        EXP["@ahmed109/apibridge-express<br/>(Express Route Handler)"]
         VAL["Runtime Validation<br/>(Params, Query, Body, Response)"]
         OAS["OpenAPI 3.0 / Swagger UI<br/>(/docs)"]
     end
 
     subgraph FrontendLayer["3. Frontend Client"]
-        RCT["@apibridge/react<br/>(Client Factory & Typed Hooks)"]
+        RCT["@ahmed109/apibridge-react<br/>(Client Factory & Typed Hooks)"]
         TQ["TanStack Query<br/>(useQuery, useMutation, Cache)"]
     end
 
@@ -47,9 +47,9 @@ flowchart TD
 
 ### Shared Contract Flow:
 
-1. **Contract Definition (`@apibridge/contracts`)**: Pure TypeScript contracts define paths, HTTP methods, headers, parameters, request body schemas, and response status codes using Zod.
-2. **Express Validation & OpenAPI (`@apibridge/express`)**: The backend mounts handlers with `apiBridge.route(contract, handler)`. Incoming requests are parsed and validated against the Zod schemas; malformed requests immediately receive standard `400 VALIDATION_ERROR` responses. Outgoing responses are validated in development to prevent schema leakage. Swagger UI is generated directly from the contracts.
-3. **React Typed Hooks (`@apibridge/react`)**: Frontend applications instantiate a typed client via `createApiClient({ baseUrl, contracts })`. Hooks like `useQuery` and `useMutation` automatically provide typed arguments, typed responses, query keys, and error structures.
+1. **Contract Definition (`@ahmed109/apibridge-contracts`)**: Pure TypeScript contracts define paths, HTTP methods, headers, parameters, request body schemas, and response status codes using Zod.
+2. **Express Validation & OpenAPI (`@ahmed109/apibridge-express`)**: The backend mounts handlers with `apiBridge.route(contract, handler)`. Incoming requests are parsed and validated against the Zod schemas; malformed requests immediately receive standard `400 VALIDATION_ERROR` responses. Outgoing responses are validated in development to prevent schema leakage. Swagger UI is generated directly from the contracts.
+3. **React Typed Hooks (`@ahmed109/apibridge-react`)**: Frontend applications instantiate a typed client via `createApiClient({ baseUrl, contracts })`. Hooks like `useQuery` and `useMutation` automatically provide typed arguments, typed responses, query keys, and error structures.
 
 ---
 
@@ -77,20 +77,20 @@ apibridge/
 
 ```bash
 # In your pnpm workspace:
-pnpm add @apibridge/contracts
-pnpm add @apibridge/express # For backend
-pnpm add @apibridge/react @tanstack/react-query # For React frontend
+pnpm add @ahmed109/apibridge-contracts
+pnpm add @ahmed109/apibridge-express # For backend
+pnpm add @ahmed109/apibridge-react @tanstack/react-query # For React frontend
 ```
 
 ---
 
 ## Quickstart & Usage Examples
 
-### 1. Define Contract (`@apibridge/contracts`)
+### 1. Define Contract (`@ahmed109/apibridge-contracts`)
 
 ```typescript
 import { z } from "zod";
-import { defineRoute, standardErrors } from "@apibridge/contracts";
+import { defineRoute, standardErrors } from "@ahmed109/apibridge-contracts";
 
 export const TaskSchema = z.object({
   id: z.string(),
@@ -117,7 +117,7 @@ export const createTaskContract = defineRoute({
 });
 ```
 
-### 2. Implement Route in Express (`@apibridge/express`)
+### 2. Implement Route in Express (`@ahmed109/apibridge-express`)
 
 ```typescript
 import express from "express";
@@ -126,8 +126,8 @@ import {
   errorHandler,
   setupSwaggerDocs,
   generateOpenApiDocument,
-} from "@apibridge/express";
-import { createTaskContract } from "@apibridge/contracts";
+} from "@ahmed109/apibridge-express";
+import { createTaskContract } from "@ahmed109/apibridge-contracts";
 
 const app = express();
 app.use(express.json());
@@ -164,12 +164,12 @@ app.use(errorHandler());
 app.listen(4000);
 ```
 
-### 3. Consume in React (`@apibridge/react`)
+### 3. Consume in React (`@ahmed109/apibridge-react`)
 
 ```tsx
 import React from "react";
-import { createApiClient } from "@apibridge/react";
-import { taskContracts } from "@apibridge/contracts";
+import { createApiClient } from "@ahmed109/apibridge-react";
+import { taskContracts } from "@ahmed109/apibridge-contracts";
 
 const api = createApiClient({
   baseUrl: "http://localhost:4000",
@@ -304,7 +304,7 @@ pnpm format
 - [ ] **CLI Code Generator**: Command-line scaffolding utility (`apibridge init`, `apibridge add-route`).
 - [ ] **API Versioning**: URL and header-based route contract versioning (`/v1`, `/v2`).
 - [ ] **npm Publishing Pipeline**: Automated semantic versioning and publishing to npm.
-- [ ] **Request Retry & Resilience**: Exponential backoff retry policies integrated into `@apibridge/react`.
+- [ ] **Request Retry & Resilience**: Exponential backoff retry policies integrated into `@ahmed109/apibridge-react`.
 - [ ] **React Native Support**: Adapter for cross-platform iOS & Android mobile clients.
 
 ---

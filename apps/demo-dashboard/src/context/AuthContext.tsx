@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User } from "@apibridge/contracts";
+import { User } from "@ahmed109/apibridge-contracts";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "../api";
 

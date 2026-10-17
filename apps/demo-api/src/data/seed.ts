@@ -1,4 +1,4 @@
-import { User, Task } from "@apibridge/contracts";
+import { User, Task } from "@ahmed109/apibridge-contracts";
 
 export const initialUsers: User[] = [
   {

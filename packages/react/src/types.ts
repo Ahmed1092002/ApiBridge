@@ -5,7 +5,7 @@ import {
   InferRouteBody,
   InferRouteResponse,
   ApiError,
-} from "@apibridge/contracts";
+} from "@ahmed109/apibridge-contracts";
 import {
   UseQueryOptions,
   UseQueryResult,

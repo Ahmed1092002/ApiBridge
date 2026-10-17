@@ -10,7 +10,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { userContracts, taskContracts, AnyRouteContract } from "@apibridge/contracts";
+import { userContracts, taskContracts, AnyRouteContract } from "@ahmed109/apibridge-contracts";
 import { API_BASE_URL } from "../api";
 
 interface EndpointMeta {
@@ -301,7 +301,7 @@ export function ApiExplorerPage(): React.JSX.Element {
           <div className="pt-4 border-t border-slate-100 text-[11px] text-slate-500 px-2 space-y-1">
             <p>
               💡 Notice that the path parameters, query schemas, and body shapes match{" "}
-              <code className="text-brand-600">@apibridge/contracts</code> definitions directly.
+              <code className="text-brand-600">@ahmed109/apibridge-contracts</code> definitions directly.
             </p>
           </div>
         </div>

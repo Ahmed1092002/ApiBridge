@@ -12,7 +12,7 @@ import {
   userContracts,
 } from "../src";
 
-describe("@apibridge/contracts", () => {
+describe("@ahmed109/apibridge-contracts", () => {
   describe("TaskSchema", () => {
     it("validates a complete, valid task", () => {
       const validTask = {

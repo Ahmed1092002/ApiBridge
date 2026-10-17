@@ -1,7 +1,17 @@
 {
-  "name": "@apibridge/contracts",
+  "name": "@ahmed109/apibridge-contracts",
   "version": "1.0.0",
   "description": "Shared framework-agnostic API contracts with Zod",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ahmed1092002/npm-packages.git",
+    "directory": "ApiBridge/packages/contracts"
+  },
+  "bugs": {
+    "url": "https://github.com/Ahmed1092002/npm-packages/issues"
+  },
+  "homepage": "https://github.com/Ahmed1092002/npm-packages/tree/main/ApiBridge#readme",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -15,7 +25,16 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --format esm,cjs --watch --dts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepack": "pnpm run build"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "zod": "^3.23.8"

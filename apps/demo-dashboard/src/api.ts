@@ -1,5 +1,5 @@
-import { createApiClient } from "@apibridge/react";
-import { userContracts, taskContracts } from "@apibridge/contracts";
+import { createApiClient } from "@ahmed109/apibridge-react";
+import { userContracts, taskContracts } from "@ahmed109/apibridge-contracts";
 
 export const API_BASE_URL: string =
   (import.meta.env.VITE_API_URL as string) || "http://localhost:4000";

@@ -1,7 +1,17 @@
 {
-  "name": "@apibridge/express",
+  "name": "@ahmed109/apibridge-express",
   "version": "1.0.0",
   "description": "Express adapter and OpenAPI generator for ApiBridge contracts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ahmed1092002/npm-packages.git",
+    "directory": "ApiBridge/packages/express"
+  },
+  "bugs": {
+    "url": "https://github.com/Ahmed1092002/npm-packages/issues"
+  },
+  "homepage": "https://github.com/Ahmed1092002/npm-packages/tree/main/ApiBridge#readme",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -15,10 +25,19 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --format esm,cjs --watch --dts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepack": "pnpm run build"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@apibridge/contracts": "workspace:*",
+    "@ahmed109/apibridge-contracts": "workspace:^1.0.0",
     "express": "^4.21.2",
     "swagger-ui-express": "^5.0.1",
     "zod": "^3.23.8"

@@ -1,8 +1,8 @@
 import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { userContracts, taskContracts } from "@apibridge/contracts";
-import { generateOpenApiDocument, setupSwaggerDocs, errorHandler } from "@apibridge/express";
+import { userContracts, taskContracts } from "@ahmed109/apibridge-contracts";
+import { generateOpenApiDocument, setupSwaggerDocs, errorHandler } from "@ahmed109/apibridge-express";
 import { authRouter } from "./routes/auth";
 import { taskRouter } from "./routes/tasks";
 import { userRepo } from "./data/repository";
@@ -52,7 +52,7 @@ const openApiSpec = generateOpenApiDocument(
       title: "ApiBridge Task Management API",
       version: "1.0.0",
       description:
-        "Full-stack contract-driven REST API powered by @apibridge/contracts and @apibridge/express.",
+        "Full-stack contract-driven REST API powered by @ahmed109/apibridge-contracts and @ahmed109/apibridge-express.",
     },
     servers: [
       {

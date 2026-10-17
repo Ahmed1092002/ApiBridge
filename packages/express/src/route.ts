@@ -5,7 +5,7 @@ import {
   InferRouteParams,
   InferRouteQuery,
   InferRouteBody,
-} from "@apibridge/contracts";
+} from "@ahmed109/apibridge-contracts";
 import { InternalServerError } from "./errors";
 
 export interface RouteOptions {

@@ -148,7 +148,7 @@ export function SettingsPage(): React.JSX.Element {
               1
             </div>
             <h3 className="font-bold text-xs uppercase tracking-wider text-slate-900">
-              @apibridge/contracts
+              @ahmed109/apibridge-contracts
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
               Zod schemas define paths, path params, query parameters, request bodies, and expected
@@ -162,7 +162,7 @@ export function SettingsPage(): React.JSX.Element {
               2
             </div>
             <h3 className="font-bold text-xs uppercase tracking-wider text-slate-900">
-              @apibridge/express
+              @ahmed109/apibridge-express
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
               Route handlers validate incoming requests and outgoing responses at runtime. Generates
@@ -176,7 +176,7 @@ export function SettingsPage(): React.JSX.Element {
               3
             </div>
             <h3 className="font-bold text-xs uppercase tracking-wider text-slate-900">
-              @apibridge/react
+              @ahmed109/apibridge-react
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
               Consumes identical contract schemas to generate TanStack Query hooks (

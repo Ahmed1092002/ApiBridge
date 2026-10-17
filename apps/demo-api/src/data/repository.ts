@@ -5,7 +5,7 @@ import {
   UpdateTaskInput,
   TaskListResponse,
   User,
-} from "@apibridge/contracts";
+} from "@ahmed109/apibridge-contracts";
 import { initialUsers, initialTasks } from "./seed";
 
 const priorityWeight: Record<string, number> = {

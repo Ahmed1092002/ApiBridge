@@ -3,10 +3,10 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { taskContracts } from "@apibridge/contracts";
+import { taskContracts } from "@ahmed109/apibridge-contracts";
 import { createApiClient, ApiBridgeClientError } from "../src";
 
-describe("@apibridge/react", () => {
+describe("@ahmed109/apibridge-react", () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {

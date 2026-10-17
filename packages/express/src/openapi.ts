@@ -1,7 +1,7 @@
 import { Express } from "express";
 import swaggerUi from "swagger-ui-express";
 import { z } from "zod";
-import { AnyRouteContract } from "@apibridge/contracts";
+import { AnyRouteContract } from "@ahmed109/apibridge-contracts";
 
 export interface OpenApiInfo {
   title: string;

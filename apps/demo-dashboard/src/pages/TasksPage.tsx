@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
-import { Task, TaskStatus, TaskPriority, TaskSortField, SortOrder } from "@apibridge/contracts";
-import { ApiBridgeClientError } from "@apibridge/react";
+import { Task, TaskStatus, TaskPriority, TaskSortField, SortOrder } from "@ahmed109/apibridge-contracts";
+import { ApiBridgeClientError } from "@ahmed109/apibridge-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export function TasksPage(): React.JSX.Element {
@@ -57,7 +57,7 @@ export function TasksPage(): React.JSX.Element {
     limit,
   });
 
-  // 2. Typed Mutations from @apibridge/react
+  // 2. Typed Mutations from @ahmed109/apibridge-react
   const createTaskMutation = api.tasks.create.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.tasks.list.contract.path] });
@@ -180,8 +180,8 @@ export function TasksPage(): React.JSX.Element {
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Task Manager</h1>
           <p className="text-xs sm:text-sm text-slate-500">
             CRUD operations powered by{" "}
-            <code className="font-mono text-brand-600">@apibridge/contracts</code> and{" "}
-            <code className="font-mono text-brand-600">@apibridge/react</code> hooks.
+            <code className="font-mono text-brand-600">@ahmed109/apibridge-contracts</code> and{" "}
+            <code className="font-mono text-brand-600">@ahmed109/apibridge-react</code> hooks.
           </p>
         </div>
 

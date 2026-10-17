@@ -1,5 +1,5 @@
 {
-  "name": "@apibridge/demo-dashboard",
+  "name": "@ahmed109/apibridge-demo-dashboard",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@apibridge/contracts": "workspace:*",
-    "@apibridge/react": "workspace:*",
+    "@ahmed109/apibridge-contracts": "workspace:*",
+    "@ahmed109/apibridge-react": "workspace:*",
     "@tanstack/react-query": "^5.62.7",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",

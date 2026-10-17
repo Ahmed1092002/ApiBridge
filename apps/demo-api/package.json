@@ -1,5 +1,5 @@
 {
-  "name": "@apibridge/demo-api",
+  "name": "@ahmed109/apibridge-demo-api",
   "version": "1.0.0",
   "private": true,
   "description": "Demo REST API using Express and ApiBridge contracts",
@@ -9,8 +9,8 @@
     "start": "tsx src/server.ts"
   },
   "dependencies": {
-    "@apibridge/contracts": "workspace:*",
-    "@apibridge/express": "workspace:*",
+    "@ahmed109/apibridge-contracts": "workspace:*",
+    "@ahmed109/apibridge-express": "workspace:*",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { userContracts } from "@apibridge/contracts";
-import { apiBridge, UnauthorizedError } from "@apibridge/express";
+import { userContracts } from "@ahmed109/apibridge-contracts";
+import { apiBridge, UnauthorizedError } from "@ahmed109/apibridge-express";
 import { userRepo } from "../data/repository";
 
 export const authRouter: Router = Router();
