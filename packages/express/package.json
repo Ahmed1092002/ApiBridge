@@ -1,6 +1,6 @@
 {
   "name": "@ahmed109/apibridge-express",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Express adapter and OpenAPI generator for ApiBridge contracts",
   "license": "MIT",
   "repository": {
