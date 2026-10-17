@@ -5,13 +5,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ahmed1092002/npm-packages.git",
-    "directory": "ApiBridge/packages/express"
+    "url": "git+https://github.com/Ahmed1092002/ApiBridge.git",
+    "directory": "packages/express"
   },
   "bugs": {
-    "url": "https://github.com/Ahmed1092002/npm-packages/issues"
+    "url": "https://github.com/Ahmed1092002/ApiBridge/issues"
   },
-  "homepage": "https://github.com/Ahmed1092002/npm-packages/tree/main/ApiBridge#readme",
+  "homepage": "https://github.com/Ahmed1092002/ApiBridge#readme",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

@@ -18,4 +18,4 @@ app.get(
 
 Add `errorHandler()` after routes, and pass contracts to `generateOpenApiDocument()` to mount Swagger UI.
 
-Repository: https://github.com/Ahmed1092002/npm-packages/tree/main/ApiBridge
+Repository: https://github.com/Ahmed1092002/ApiBridge

@@ -20,4 +20,4 @@ export const getProject = defineRoute({
 
 Use the contract with `@ahmed109/apibridge-express` for validation/OpenAPI and `@ahmed109/apibridge-react` for typed client hooks.
 
-Repository: https://github.com/Ahmed1092002/npm-packages/tree/main/ApiBridge
+Repository: https://github.com/Ahmed1092002/ApiBridge

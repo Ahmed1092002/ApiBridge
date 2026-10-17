@@ -16,4 +16,4 @@ const query = api.tasks.list.useQuery({ status: 'todo' });
 
 Wrap the application with TanStack Query's `QueryClientProvider` before using generated hooks.
 
-Repository: https://github.com/Ahmed1092002/npm-packages/tree/main/ApiBridge
+Repository: https://github.com/Ahmed1092002/ApiBridge

@@ -1,5 +1,8 @@
 # ApiBridge
 
+[![CI](https://github.com/Ahmed1092002/ApiBridge/actions/workflows/ci.yml/badge.svg)](https://github.com/Ahmed1092002/ApiBridge/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 > **Production-quality, type-safe REST API contract toolkit for full-stack TypeScript applications.**
 
 ApiBridge eliminates type drift and duplicated endpoint definitions between frontend and backend. By defining API routes, request parameters, queries, bodies, and responses once with [Zod](https://zod.dev), ApiBridge guarantees end-to-end type safety, runtime request validation, automated Swagger/OpenAPI documentation generation, and fully typed React hooks.
